@@ -362,20 +362,11 @@ def is_gdrive_link(url: str):
 def is_gdtot_link(url: str):
     url = re_match(r'https?://.+\.gdtot\.\S+', url)
     return bool(url)
+def is_gp_link(url: str):
+    return "gplinks.co" in url
 
-def is_unified_link(url: str):
-    url = re_match(r'https?://(appdrive|driveapp|driveace|gdflix|drivebit|drivesharer|drivepro)\.\S+', url)
-    if bool(url) == True:
-        return bool(url)
-    else:
-        return False
-
-def is_udrive_link(url: str):
-    if 'drivehub.ws' in url:
-        return 'drivehub.ws' in url
-    else:
-        url = re_match(r'https?://(hubdrive|katdrive|kolop|drivefire|drivebuzz)\.\S+', url)
-        return bool(url)
+def is_appdrive_link(url: str):
+    return "appdrive.in" in url or "appdrive.info" in url or "driveapp.in" in url or "gdflix.pro" in url or "drivehub.in" in url or "drivesharer.in" in url or "drivebit.in" in url or "drivelinks.in" in url or "driveace.in" in url or "drivepro.in" in url
 
 def is_ouo_link(url: str):
     return "ouo.io" in url or "ouo.press" in url
@@ -402,6 +393,9 @@ def is_htpm_link(url: str) :
 def is_rock_link(url: str) :
     return "rocklinks.net" in url or "shortingly.me" in url
 
+def is_kolop_link(url: str) :
+    return "kolop.icu" in url
+
 def is_ola_link(url: str) :
     url = re_match(r'https?://olamovies.\S+', url)
     print(url)
@@ -411,7 +405,6 @@ def is_gt_link(url: str) :
 
 def is_psm_link(url: str) :
     return "psa.pm" in url
-
 
 def is_mega_link(url: str):
     return "mega.nz" in url or "mega.co.nz" in url
