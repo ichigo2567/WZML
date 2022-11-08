@@ -600,3 +600,306 @@ def udrive(url: str) -> str:
     flink = info_parsed['gdrive_url']
 
     return flink 
+
+
+
+
+
+def gt(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://go.theforyou.in"
+    url = url[:-1] if url[-1] == '/' else url
+
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}?quelle="
+
+    resp = client.get(final_url)
+    
+    soup = BeautifulSoup(resp.content, "html.parser")
+    try:
+        inputs = soup.find(id="go-link").find_all(name="input")
+    except:
+        return "Incorrect Link"
+    data = { input.get('name'): input.get('value') for input in inputs }
+
+    h = { "x-requested-with": "XMLHttpRequest" }
+    
+    time.sleep(6)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return r.json()['url']
+    except: return "Something went wrong :("
+
+def psm(url):
+       client = rsession()
+       h = {
+             'upgrade-insecure-requests': '1',
+             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+       }
+       res = client.get(url, cookies={}, headers=h)
+       print(res.text) 
+       url = 'https://try2link.com/'+re.findall('try2link\.com\/(.*?) ', res.text)[0]
+
+       res = client.head(url)
+
+       id = re.findall('d=(.*?)&', res.headers['location'])[0]
+       id = base64.b64decode(id).decode('utf-8')
+
+       url += f'/?d={id}'
+       res = client.get(url)
+
+       bs4 = BeautifulSoup(res.content, 'html.parser')
+       inputs = bs4.find_all('input')
+       data = { input.get('name'): input.get('value') for input in inputs }
+    
+       time.sleep(6.5)
+       res = client.post(
+           'https://try2link.com/links/go',
+          headers={
+                 'referer': url,
+                 'x-requested-with': 'XMLHttpRequest',
+          }, data=data
+       )
+       out = res.json()
+       return out
+
+def dlbypass(url):
+    api = "https://api.emilyx.in/api"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    resp = client.get(url)
+    if resp.status_code == 404:
+        return "File not found/The link you entered is wrong!"
+    try:
+        resp = client.post(api, json={"type": "droplink", "url": url})
+        res = resp.json()
+    except BaseException:
+        return "API UnResponsive / Invalid Link !"
+    if res["success"] is True:
+        return res["url"]
+    else:
+        return res["msg"]
+def loan(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    j = url.split('?token=')[-1]
+    param = j.replace('&m=1','')
+    if "loan.kinemaster.cc" in url:
+         DOMAIN = "https://go.kinemaster.cc"
+    else:
+         DOMAIN = "https://go.theforyou.in"
+    final_url = f"{DOMAIN}/{param}"
+    resp = client.get(final_url)
+    soup = BeautifulSoup(resp.content, "html.parser")    
+    try: inputs = soup.find(id="go-link").find_all(name="input")
+    except: return "Incorrect Link"
+    data = { input.get('name'): input.get('value') for input in inputs }
+    h = { "x-requested-with": "XMLHttpRequest" }
+    time.sleep(10)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return r.json()['url']
+    except: return "Something went wrong :("
+
+def ola(url) :
+    soup = "None"
+    client = requests.Session()
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Referer': url,
+            'Alt-Used': 'olamovies.wtf',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-User': '?1',
+        }
+    while 'rocklinks.net' not in soup:
+             res = client.post(url, headers=headers, allow_redirects=True)
+             j = res.text
+             rose = j.split('url = "')[-1]
+             soup = rose.split('";')[0]       
+             if "rocklinks.net" in soup:
+                   return soup
+def try2link(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    
+    url = url[:-1] if url[-1] == '/' else url
+    
+    params = (('d', int(time.time()) + (60 * 4)),)
+    r = client.get(url, params=params, headers= {'Referer': 'https://newforex.online/'})
+    
+    soup = BeautifulSoup(r.text, 'html.parser')
+    inputs = soup.find(id="go-link").find_all(name="input")
+    data = { input.get('name'): input.get('value') for input in inputs }
+    time.sleep(7)
+    
+    headers = {'Host': 'try2link.com', 'X-Requested-With': 'XMLHttpRequest', 'Origin': 'https://try2link.com', 'Referer': url}
+    
+    bypassed_url = client.post('https://try2link.com/links/go', headers=headers,data=data)
+    return bypassed_url.json()["url"]
+
+def htpm(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    r = client.get(url, allow_redirects=True).text
+    j = r.split('("')[-1]
+    url = j.split('")')[0]
+    return url
+    
+
+
+def mdisk(url: str) -> str:
+
+        fxl = url.split("/")
+
+        urlx = fxl[-1]
+
+        uhh = mdis_k(urlx)
+
+        return uhh
+
+def mdis_k(urlx):
+
+       headers = {
+
+            'authority': 'diskuploader.entertainvideo.com',
+
+            'accept': '*/*',
+
+            'accept-language': 'en-US,en;q=0.9',
+
+            'cache-control': 'no-cache',
+
+            'origin': 'https://mdisk.me',
+
+            'pragma': 'no-cache',
+
+            'referer': 'https://mdisk.me/',
+
+            'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="100", "Google Chrome";v="100"',
+
+            'sec-ch-ua-mobile': '?0',
+
+            'sec-ch-ua-platform': '"Windows"',
+
+            'sec-fetch-dest': 'empty',
+
+            'sec-fetch-mode': 'cors',
+
+            'sec-fetch-site': 'cross-site',
+
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
+
+       }
+
+
+
+       params = {
+
+            'param': urlx,
+
+            'sys': 'ios',
+
+       }
+
+
+
+       res = requests.get('https://diskuploader.entertainvideo.com/v1/file/cdnurl', params=params, headers=headers)
+       yoyo = res.json()['source']
+       return yoyo
+       return sendMessage(link, bot, message)
+
+
+WETRANSFER_API_URL = "https://wetransfer.com/api/v4/transfers"
+WETRANSFER_DOWNLOAD_URL = WETRANSFER_API_URL + "/{transfer_id}/download"
+
+def _prepare_session() -> rsession:
+    s = rsession()
+    r = s.get("https://wetransfer.com/")
+    m = re_search('name="csrf-token" content="([^"]+)"', r.text)
+    s.headers.update({
+            "x-csrf-token": m.group(1),
+            "x-requested-with": "XMLHttpRequest",
+        })
+    return s
+
+def wetransfer(url: str) -> str:
+    if url.startswith("https://we.tl/"):
+        r = rhead(url, allow_redirects=True)
+        url = r.url
+    recipient_id = None
+    params = urlparse(url).path.split("/")[2:]
+    if len(params) == 2:
+        transfer_id, security_hash = params
+    elif len(params) == 3:
+        transfer_id, recipient_id, security_hash = params
+    else:
+        return None
+    j = {
+        "intent": "entire_transfer",
+        "security_hash": security_hash,
+    }
+    if recipient_id:
+        j["recipient_id"] = recipient_id
+    s = _prepare_session()
+    r = s.post(WETRANSFER_DOWNLOAD_URL.format(transfer_id=transfer_id), json=j)
+    j = r.json()
+    try:
+        if "direct_link" in j:
+            return j["direct_link"]    
+    except:
+        raise DirectDownloadLinkException("ERROR: Error while trying bypass!")
+
+def ouo(url: str) -> str:
+    api = "https://api.emilyx.in/api"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    resp = client.get(url)
+    if resp.status_code == 404:
+        return "File not found/The link you entered is wrong!"
+    try:
+        resp = client.post(api, json={"type": "ouo", "url": url})
+        res = resp.json()
+    except BaseException:
+        return "API UnResponsive / Invalid Link !"
+    if res["success"] is True:
+        return res["url"]
+    else:
+        return res["msg"]
+
+def htp(url: str) -> str:
+    download = rget(url, stream=True, allow_redirects=False) 
+    return download.headers["location"]
+
+
+def rock(url: str) -> str:
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    if 'rocklinks.net' in url:
+        DOMAIN = "https://blog.disheye.com"
+    else:
+        DOMAIN = "https://go.techyjeeshan.xyz"
+
+    url = url[:-1] if url[-1] == '/' else url
+
+    code = url.split("/")[-1]
+    if 'rocklinks.net' in url:
+        final_url = f"{DOMAIN}/{code}?quelle=" 
+    else:
+        final_url = f"{DOMAIN}/{code}?quelle="
+
+    resp = client.get(final_url)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    
+    try: inputs = soup.find(id="go-link").find_all(name="input")
+    except: return "Incorrect Link"
+    
+    data = { input.get('name'): input.get('value') for input in inputs }
+
+    h = { "x-requested-with": "XMLHttpRequest" }
+    
+    time.sleep(10)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return r.json()['url']
+    except: return "Something went wrong :("
+    
