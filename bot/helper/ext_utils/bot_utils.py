@@ -377,6 +377,42 @@ def is_udrive_link(url: str):
         url = re_match(r'https?://(hubdrive|katdrive|kolop|drivefire|drivebuzz)\.\S+', url)
         return bool(url)
 
+def is_ouo_link(url: str):
+    return "ouo.io" in url or "ouo.press" in url
+
+def is_mdisk_link(url: str):
+    return "mdisk.me" in url
+
+def is_try2link_link(url: str):
+    return "try2link.com" in url
+
+def is_loan_link(url: str):
+    return "loan.kinemaster.cc" in url or "www.theforyou.in" in url
+
+def is_dl_link(url: str):
+    return "droplink.co" in url
+
+def is_htp_link(url: str) :
+    return "toonworld4all.me" in url or "shortingly.in" in url
+
+def is_htpm_link(url: str) :
+    url = re_match(r'https?://htpmovies.\S+', url)
+    print(url)
+
+def is_rock_link(url: str) :
+    return "rocklinks.net" in url or "shortingly.me" in url
+
+def is_ola_link(url: str) :
+    url = re_match(r'https?://olamovies.\S+', url)
+    print(url)
+
+def is_gt_link(url: str) :
+    return "gtlinks.me" in url
+
+def is_psm_link(url: str) :
+    return "psa.pm" in url
+
+
 def is_mega_link(url: str):
     return "mega.nz" in url or "mega.co.nz" in url
 
