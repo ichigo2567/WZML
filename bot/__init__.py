@@ -248,7 +248,31 @@ except:
     log_warning('MEGA Credentials not provided!')
     MEGA_EMAIL_ID = None
     MEGA_PASSWORD = None
+try:
+    KOLOP_CRYPT = getConfig('KOLOP_CRYPT')
+    if len(PWSSD) == 0:
+        raise KeyError
+except KeyError:
+    KOLOP_CRYPT = None
 
+try:
+    EMAIL = getConfig('EMAIL')
+    if len(EMAIL) == 0:
+        raise KeyError
+except KeyError:
+    EMAIL = None
+try:
+    PWSSD = getConfig('PWSSD')
+    if len(PWSSD) == 0:
+        raise KeyError
+except KeyError:
+    PWSSD = None
+try:
+    CLONE_LOACTION = getConfig('CLONE_LOACTION')
+    if len(CLONE_LOACTION) == 0:
+        raise KeyError
+except KeyError:
+    CLONE_LOACTION = ''
 try:
     DB_URI = getConfig('DATABASE_URL')
     if len(DB_URI) == 0:
