@@ -7,29 +7,25 @@
 from https://github.com/AvinashReddy3108/PaperplaneExtended . I hereby take no credit of the following code other
 than the modifications. See https://github.com/AvinashReddy3108/PaperplaneExtended/commits/master/userbot/modules/direct_links.py
 for original authorship. """
-
-import math
-
-from requests import get as rget, head as rhead, post as rpost, Session as rsession
-from re import findall as re_findall, sub as re_sub, match as re_match, search as re_search
 import requests
 import re
-from time import sleep, time
-from base64 import b64decode
-from urllib.parse import urlparse, unquote, parse_qs
-from json import loads as jsonloads
-from lk21 import Bypass
-from lxml import etree
-from cfscrape import create_scraper
+import time
 import cloudscraper
+from cfscrape import create_scraper
+from lxml import etree
+from requests import get as rget, head as rhead, post as rpost, Session as rsession
+from re import findall as re_findall, sub as re_sub, match as re_match, search as re_search
+from base64 import b64decode
+from urllib.parse import urlparse, unquote
+from json import loads as jsnloads
+from lk21 import Bypass
+from cfscrape import create_scraper
 from bs4 import BeautifulSoup
-from base64 import standard_b64encode
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+from base64 import standard_b64encode, b64decode
 
-from bot import LOGGER, UPTOBOX_TOKEN, CRYPT, UNIFIED_EMAIL, UNIFIED_PASS, HUBDRIVE_CRYPT, KATDRIVE_CRYPT, DRIVEFIRE_CRYPT
+from bot import LOGGER, UPTOBOX_TOKEN, CRYPT, EMAIL, PWSSD, CLONE_LOACTION as GDRIVE_FOLDER_ID, KOLOP_CRYPT
 from bot.helper.telegram_helper.bot_commands import BotCommands
-from bot.helper.ext_utils.bot_utils import *
+from bot.helper.ext_utils.bot_utils import is_gdtot_link, is_gp_link, is_appdrive_link, is_mdisk_link, is_dl_link, is_ouo_link, is_htp_link, is_rock_link, is_kolop_link, is_gt_link, is_psm_link, is_loan_link, is_ola_link, is_try2link_link, is_htpm_link
 from bot.helper.ext_utils.exceptions import DirectDownloadLinkException
 
 fmed_list = ['fembed.net', 'fembed.com', 'femax20.com', 'fcdn.stream', 'feurl.com', 'layarkacaxxi.icu',
@@ -44,6 +40,8 @@ def direct_link_generator(link: str):
         return zippy_share(link)
     elif 'yadi.sk' in link or 'disk.yandex.com' in link:
         return yandex_disk(link)
+    elif is_ouo_link(link):
+        return ouo(link) 
     elif 'mediafire.com' in link:
         return mediafire(link)
     elif 'uptobox.com' in link:
@@ -76,12 +74,40 @@ def direct_link_generator(link: str):
         return solidfiles(link)
     elif 'krakenfiles.com' in link:
         return krakenfiles(link)
+    elif 'upload.ee' in link:
+        return uploadee(link)
     elif is_gdtot_link(link):
         return gdtot(link)
-    elif is_unified_link(link):
-        return unified(link)
-    elif is_udrive_link(link):
-        return udrive(link)
+    elif is_try2link_link(link):
+        return try2link(link)
+    elif is_appdrive_link(link):
+      return appdrive_dl(link)
+    elif is_gp_link(link):
+        return gplinks(link)
+    elif is_htp_link(link):
+        return htp(link) 
+    elif is_htpm_link(link):
+        return htpm(link)
+    elif is_mdisk_link(link):
+        return mdisk(link)
+    elif 'we.tl' in link:
+        return wetransfer(link)
+    elif is_dl_link(link):
+        return dlbypass(link) 
+    elif is_rock_link(link):
+        return rock(link)
+    elif 'hubdrive.me' in link:
+        return hubdrive(link) 
+    elif is_psm_link(link):
+        return psm(link) 
+    elif is_ola_link(link):
+        return ola(link)
+    elif is_loan_link(link):
+        return loan(link)
+    elif is_kolop_link(link):
+        return kolop_dl(link) 
+    elif is_gt_link(link):
+        return gt(link) 
     elif any(x in link for x in fmed_list):
         return fembed(link)
     elif any(x in link for x in ['sbembed.com', 'watchsb.com', 'streamsb.net', 'sbplay.org']):
@@ -90,47 +116,15 @@ def direct_link_generator(link: str):
         raise DirectDownloadLinkException(f'No Direct link function found for {link}')
 
 def zippy_share(url: str) -> str:
-    base_url = re_search('http.+.zippyshare.com', url).group()
-    response = rget(url)
-    pages = BeautifulSoup(response.text, "html.parser")
-    js_script = pages.find("div", style="margin-left: 24px; margin-top: 20px; text-align: center; width: 303px; height: 105px;")
-    if js_script is None:
-        js_script = pages.find("div", style="margin-left: -22px; margin-top: -5px; text-align: center;width: 303px;")
-    js_script = str(js_script)
-
-    try:
-        var_a = re_findall(r"var.a.=.(\d+)", js_script)[0]
-        mtk = int(math.pow(int(var_a),3) + 3)
-        uri1 = re_findall(r"\.href.=.\"/(.*?)/\"", js_script)[0]
-        uri2 = re_findall(r"\+\"/(.*?)\"", js_script)[0]
-    except:
-        try:
-            a, b = re_findall(r"var.[ab].=.(\d+)", js_script)
-            mtk = eval(f"{math.floor(int(a)/3) + int(a) % int(b)}")
-            uri1 = re_findall(r"\.href.=.\"/(.*?)/\"", js_script)[0]
-            uri2 = re_findall(r"\)\+\"/(.*?)\"", js_script)[0]
-        except:
-            try:
-                mtk = eval(re_findall(r"\+\((.*?).\+", js_script)[0] + "+ 11")
-                uri1 = re_findall(r"\.href.=.\"/(.*?)/\"", js_script)[0]
-                uri2 = re_findall(r"\)\+\"/(.*?)\"", js_script)[0]
-            except:
-                try:
-                    mtk = eval(re_findall(r"\+.\((.*?)\).\+", js_script)[0])
-                    uri1 = re_findall(r"\.href.=.\"/(.*?)/\"", js_script)[0]
-                    uri2 = re_findall(r"\+.\"/(.*?)\"", js_script)[0]
-                except Exception as err:
-                    LOGGER.error(err)
-                    raise DirectDownloadLinkException("ERROR: Failed to Get Direct Link")
-    dl_url = f"{base_url}/{uri1}/{int(mtk)}/{uri2}"
-    return dl_url
-
+    """ ZippyShare direct link generator
+    Based on https://github.com/zevtyardt/lk21 """
+    return Bypass().bypass_zippyshare(url)
 
 def yandex_disk(url: str) -> str:
     """ Yandex.Disk direct link generator
     Based on https://github.com/wldhx/yadisk-direct """
     try:
-        link = re_findall(r'\b(https?://(yadi.sk|disk.yandex.com|disk.yandex.ru|disk.yandex.com.tr|disk.yandex.com.ru)\S+)', url)[0][0]
+        link = re_findall(r'\b(https?://(yadi.sk|disk.yandex.com)\S+)', url)[0][0]
     except IndexError:
         return "No Yandex.Disk links found\n"
     api = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}'
@@ -145,7 +139,7 @@ def uptobox(url: str) -> str:
     try:
         link = re_findall(r'\bhttps?://.*uptobox\.com\S+', url)[0]
     except IndexError:
-        raise DirectDownloadLinkException("No Uptobox links found\n")
+        raise DirectDownloadLinkException("No Uptobox links found")
     if UPTOBOX_TOKEN is None:
         LOGGER.error('UPTOBOX_TOKEN not provided!')
         dl_url = link
@@ -155,7 +149,7 @@ def uptobox(url: str) -> str:
             dl_url = link
         except:
             file_id = re_findall(r'\bhttps?://.*uptobox\.com/(\w+)', url)[0]
-            file_link = 'https://uptobox.com/api/link?token=%s&file_code=%s' % (UPTOBOX_TOKEN, file_id)
+            file_link = f'https://uptobox.com/api/link?token={UPTOBOX_TOKEN}&file_code={file_id}'
             req = rget(file_link)
             result = req.json()
             if result['message'].lower() == 'success':
@@ -184,7 +178,6 @@ def mediafire(url: str) -> str:
     page = BeautifulSoup(rget(link).content, 'lxml')
     info = page.find('a', {'aria-label': 'Download file'})
     return info.get('href')
-
 
 def osdn(url: str) -> str:
     """ OSDN direct link generator """
@@ -265,7 +258,8 @@ def onedrive(link: str) -> str:
     resp = rhead(direct_link1)
     if resp.status_code != 302:
         raise DirectDownloadLinkException("ERROR: Unauthorized link, the link may be private")
-    return resp.next.url
+    dl_link = resp.next.url
+    return dl_link
 
 def pixeldrain(url: str) -> str:
     """ Based on https://github.com/yash-dk/TorToolkit-Telegram """
@@ -281,7 +275,7 @@ def pixeldrain(url: str) -> str:
     if resp["success"]:
         return dl_link
     else:
-        raise DirectDownloadLinkException(f"ERROR: Cant't download due {resp['message']}.")
+        raise DirectDownloadLinkException("ERROR: Cant't download due {}.".format(resp["message"]))
 
 def antfiles(url: str) -> str:
     """ Antfiles direct link generator
@@ -344,7 +338,7 @@ def fichier(link: str) -> str:
           raise DirectDownloadLinkException("ERROR: Unable to generate Direct Link 1fichier!")
         else:
           return dl_url
-    elif len(soup.find_all("div", {"class": "ct_warn"})) == 3:
+    elif len(soup.find_all("div", {"class": "ct_warn"})) == 2:
         str_2 = soup.find_all("div", {"class": "ct_warn"})[-1]
         if "you must wait" in str(str_2).lower():
             numbers = [int(word) for word in str(str_2).split() if word.isdigit()]
@@ -355,9 +349,8 @@ def fichier(link: str) -> str:
         elif "protect access" in str(str_2).lower():
           raise DirectDownloadLinkException(f"ERROR: This link requires a password!\n\n<b>This link requires a password!</b>\n- Insert sign <b>::</b> after the link and write the password after the sign.\n\n<b>Example:</b>\n<code>/{BotCommands.MirrorCommand} https://1fichier.com/?smmtd8twfpm66awbqz04::love you</code>\n\n* No spaces between the signs <b>::</b>\n* For the password, you can use a space!")
         else:
-            print(str_2)
-            raise DirectDownloadLinkException("ERROR: Failed to generate Direct Link from 1fichier!")
-    elif len(soup.find_all("div", {"class": "ct_warn"})) == 4:
+            raise DirectDownloadLinkException("ERROR: Error trying to generate Direct Link from 1fichier!")
+    elif len(soup.find_all("div", {"class": "ct_warn"})) == 3:
         str_1 = soup.find_all("div", {"class": "ct_warn"})[-2]
         str_3 = soup.find_all("div", {"class": "ct_warn"})[-1]
         if "you must wait" in str(str_1).lower():
@@ -382,7 +375,7 @@ def solidfiles(url: str) -> str:
     }
     pageSource = rget(url, headers = headers).text
     mainOptions = str(re_search(r'viewerOptions\'\,\ (.*?)\)\;', pageSource).group(1))
-    return jsonloads(mainOptions)["downloadUrl"]
+    return jsnloads(mainOptions)["downloadUrl"]
 
 def krakenfiles(page_link: str) -> str:
     """ krakenfiles direct link generator
@@ -400,8 +393,8 @@ def krakenfiles(page_link: str) -> str:
         for item in soup.find_all("div", attrs={"data-file-hash": True})
     ]
     if not hashes:
-        raise DirectDownloadLinkException(f"ERROR: Hash not found for : {page_link}")
-
+        raise DirectDownloadLinkException(
+            f"Hash not found for : {page_link}")
 
     dl_hash = hashes[0]
 
@@ -420,8 +413,18 @@ def krakenfiles(page_link: str) -> str:
     if "url" in dl_link_json:
         return dl_link_json["url"]
     else:
-        raise DirectDownloadLinkException(f"ERROR: Failed to acquire download URL from kraken for : {page_link}")
+        raise DirectDownloadLinkException(
+            f"Failed to acquire download URL from kraken for : {page_link}")
 
+def uploadee(url: str) -> str:
+    """ uploadee direct link generator
+    By https://github.com/iron-heart-x"""
+    try:
+        soup = BeautifulSoup(rget(url).content, 'lxml')
+        sa = soup.find('a', attrs={'id':'d_l'})
+        return sa['href']
+    except:
+        raise DirectDownloadLinkException(f"ERROR: Failed to acquire download URL from upload.ee for : {url}")
 
 def gdtot(url: str) -> str:
     """ Gdtot google drive link generator
@@ -443,311 +446,144 @@ def gdtot(url: str) -> str:
         raise DirectDownloadLinkException("ERROR: Try in your broswer, mostly file not found or user limit exceeded!")
     return f'https://drive.google.com/open?id={decoded_id}'
 
-account = {
-    'email': UNIFIED_EMAIL, 
-   'passwd': UNIFIED_PASS
-}
-def account_login(client, url, email, password):
-    data = {
-        'email': email,
-        'password': password
-    }
-    client.post(f'https://{urlparse(url).netloc}/login', data=data)
-def gen_payload(data, boundary=f'{"-"*6}_'):
-    data_string = ''
-    for item in data:
-        data_string += f'{boundary}\r\n'
-        data_string += f'Content-Disposition: form-data; name="{item}"\r\n\r\n{data[item]}\r\n'
-    data_string += f'{boundary}--\r\n'
-    return data_string
-
-def parse_infou(data):
-    info = re_findall('>(.*?)<\/li>', data)
-    info_parsed = {}
-    for item in info:
-        kv = [s.strip() for s in item.split(':', maxsplit = 1)]
-        info_parsed[kv[0].lower()] = kv[1]
-    return info_parsed
-
-def unified(url: str) -> str:
-    if (UNIFIED_EMAIL or UNIFIED_PASS) is None:
-        raise DirectDownloadLinkException("UNIFIED_EMAIL and UNIFIED_PASS env vars not provided")
-    client = cloudscraper.create_scraper(delay=10, browser='chrome')
-    client.headers.update({
-        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36"
-    })
-    account_login(client, url, account['email'], account['passwd'])
-    res = client.get(url)
-    key = re_findall('"key",\s+"(.*?)"', res.text)[0]
-    ddl_btn = etree.HTML(res.content).xpath("//button[@id='drc']")
-    info_parsed = parse_infou(res.text)
-    info_parsed['error'] = False
-    info_parsed['link_type'] = 'login'  # direct/login
-    headers = {
-        "Content-Type": f"multipart/form-data; boundary={'-'*4}_",
-    }
-    data = {
-        'type': 1,
-        'key': key,
-        'action': 'original'
-    }
-    if len(ddl_btn):
-        info_parsed['link_type'] = 'direct'
-        data['action'] = 'direct'
-    while data['type'] <= 3:
-        try:
-            response = client.post(url, data=gen_payload(data), headers=headers).json()
-            break
-        except: data['type'] += 1
-    if 'url' in response:
-        info_parsed['gdrive_link'] = response['url']
-    elif 'error' in response and response['error']:
-        info_parsed['error'] = True
-        info_parsed['error_message'] = response['message']
-    else:
-        info_parsed['error'] = True
-        info_parsed['error_message'] = 'Something went wrong :('
-
-    if info_parsed['error']:
-        raise DirectDownloadLinkException(f"ERROR! {info_parsed['error_message']}")
-
-    if urlparse(url).netloc == 'appdrive.info':
-        flink = info_parsed['gdrive_link']
-        return flink
-
-    elif urlparse(url).netloc == 'driveapp.in':
-        res = client.get(info_parsed['gdrive_link'])
-        drive_link = etree.HTML(res.content).xpath("//a[contains(@class,'btn')]/@href")[0]
-        flink = drive_link
-        return flink
-
-    else:
-        res = client.get(info_parsed['gdrive_link'])
-        drive_link = etree.HTML(res.content).xpath("//a[contains(@class,'btn btn-primary')]/@href")[0]
-        flink = drive_link
-        info_parsed['src_url'] = url
-        return flink
-
-def parse_info(res, url):
-    info_parsed = {}
-    if 'drivebuzz' in url:
-        info_chunks = re.findall('<td\salign="right">(.*?)<\/td>', res.text)
-    else:
-        info_chunks = re_findall('>(.*?)<\/td>', res.text)
-    for i in range(0, len(info_chunks), 2):
-        info_parsed[info_chunks[i]] = info_chunks[i+1]
-    return info_parsed
-
-def udrive(url: str) -> str:
-    if 'katdrive' or 'hubdrive'  in url:
-      client = rsession()
-    else:
-      client = cloudscraper.create_scraper(delay=10, browser='chrome')
-
-    if 'hubdrive' in url:
-        if "hubdrive.in" in url:
-            url = url.replace(".in",".pro")
-        client.cookies.update({'crypt': HUBDRIVE_CRYPT})
-    if 'drivehub' in url:
-        client.cookies.update({'crypt': KATDRIVE_CRYPT})
-    if 'katdrive' in url:
-        client.cookies.update({'crypt': KATDRIVE_CRYPT})
-    if 'kolop' in url:
-        client.cookies.update({'crypt': KATDRIVE_CRYPT})
-    if 'drivefire' in url:
-        client.cookies.update({'crypt': DRIVEFIRE_CRYPT})
-    if 'drivebuzz' in url:
-        client.cookies.update({'crypt': DRIVEFIRE_CRYPT})
-
-    res = client.get(url)
-    info_parsed = parse_info(res, url)
-
-
-    info_parsed['error'] = False
-
-    up = urlparse(url)
-    req_url = f"{up.scheme}://{up.netloc}/ajax.php?ajax=download"
-
-    file_id = url.split('/')[-1]
-
-    data = { 'id': file_id }
-
-    headers = {
-        'x-requested-with': 'XMLHttpRequest'
-    }
-
+def appdrive_dl(url: str) -> str:
     try:
-        res = client.post(req_url, headers=headers, data=data).json()['file']
-    except: return {'error': True, 'src_url': url}
-
-    if 'drivefire' in url:
-        decoded_id = res.rsplit('/', 1)[-1]
-        flink = f"https://drive.google.com/file/d/{decoded_id}"
-        return flink
-    elif 'drivehub' in url:
-        gd_id = res.rsplit("=", 1)[-1]
-        flink = f"https://drive.google.com/open?id={gd_id}"
-        return flink
-    elif 'drivebuzz' in url:
-        gd_id = res.rsplit("=", 1)[-1]
-        flink = f"https://drive.google.com/open?id={gd_id}"
-        return flink
-    else:
-        gd_id = re_findall('gd=(.*)', res, re.DOTALL)[0]
-
-    info_parsed['gdrive_url'] = f"https://drive.google.com/open?id={gd_id}"
-    info_parsed['src_url'] = url
-    flink = info_parsed['gdrive_url']
-
-    return flink 
-
-
-
-
-
-def gt(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://go.theforyou.in"
-    url = url[:-1] if url[-1] == '/' else url
-
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}?quelle="
-
-    resp = client.get(final_url)
-    
-    soup = BeautifulSoup(resp.content, "html.parser")
-    try:
-        inputs = soup.find(id="go-link").find_all(name="input")
-    except:
-        return "Incorrect Link"
-    data = { input.get('name'): input.get('value') for input in inputs }
-
-    h = { "x-requested-with": "XMLHttpRequest" }
-    
-    time.sleep(6)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try:
-        return r.json()['url']
-    except: return "Something went wrong :("
-
-def psm(url):
-       client = rsession()
-       h = {
-             'upgrade-insecure-requests': '1',
-             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
-       }
-       res = client.get(url, cookies={}, headers=h)
-       print(res.text) 
-       url = 'https://try2link.com/'+re.findall('try2link\.com\/(.*?) ', res.text)[0]
-
-       res = client.head(url)
-
-       id = re.findall('d=(.*?)&', res.headers['location'])[0]
-       id = base64.b64decode(id).decode('utf-8')
-
-       url += f'/?d={id}'
-       res = client.get(url)
-
-       bs4 = BeautifulSoup(res.content, 'html.parser')
-       inputs = bs4.find_all('input')
-       data = { input.get('name'): input.get('value') for input in inputs }
-    
-       time.sleep(6.5)
-       res = client.post(
-           'https://try2link.com/links/go',
-          headers={
-                 'referer': url,
-                 'x-requested-with': 'XMLHttpRequest',
-          }, data=data
-       )
-       out = res.json()
-       return out
-
-def dlbypass(url):
-    api = "https://api.emilyx.in/api"
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    resp = client.get(url)
-    if resp.status_code == 404:
-        return "File not found/The link you entered is wrong!"
-    try:
-        resp = client.post(api, json={"type": "droplink", "url": url})
-        res = resp.json()
-    except BaseException:
-        return "API UnResponsive / Invalid Link !"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
-def loan(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    j = url.split('?token=')[-1]
-    param = j.replace('&m=1','')
-    if "loan.kinemaster.cc" in url:
-         DOMAIN = "https://go.kinemaster.cc"
-    else:
-         DOMAIN = "https://go.theforyou.in"
-    final_url = f"{DOMAIN}/{param}"
-    resp = client.get(final_url)
-    soup = BeautifulSoup(resp.content, "html.parser")    
-    try: inputs = soup.find(id="go-link").find_all(name="input")
-    except: return "Incorrect Link"
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(10)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try:
-        return r.json()['url']
-    except: return "Something went wrong :("
-
-def ola(url) :
-    soup = "None"
-    client = requests.Session()
-    headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Referer': url,
-            'Alt-Used': 'olamovies.wtf',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'same-origin',
-            'Sec-Fetch-User': '?1',
+        account = {"email": EMAIL, "passwd": PWSSD}
+        client = cloudscraper.create_scraper(allow_brotli=False)
+        client.headers.update(
+            {
+                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36"
+            }
+        )
+        data = {"email": account["email"], "password": account["passwd"]}
+        client.post(f"https://{urlparse(url).netloc}/login", data=data)
+        res = client.get(url)
+        key = re.findall('"key",\s+"(.*?)"', res.text)[0]
+        ddl_btn = etree.HTML(res.content).xpath("//button[@id='drc']")
+        info = re.findall(">(.*?)<\/li>", res.text)
+        info_parsed = {}
+        for item in info:
+            kv = [s.strip() for s in item.split(":", maxsplit=1)]
+            info_parsed[kv[0].lower()] = kv[1]
+        info_parsed = info_parsed
+        info_parsed["error"] = False
+        info_parsed["link_type"] = "login"
+        headers = {
+            "Content-Type": f"multipart/form-data; boundary={'-'*4}_",
         }
-    while 'rocklinks.net' not in soup:
-             res = client.post(url, headers=headers, allow_redirects=True)
-             j = res.text
-             rose = j.split('url = "')[-1]
-             soup = rose.split('";')[0]       
-             if "rocklinks.net" in soup:
-                   return soup
-def try2link(url):
+        data = {"type": 1, "key": key, "action": "original"}
+        if len(ddl_btn):
+            info_parsed["link_type"] = "direct"
+            data["action"] = "direct"
+        while data["type"] <= 3:
+            boundary = f'{"-"*6}_'
+            data_string = ""
+            for item in data:
+                data_string += f"{boundary}\r\n"
+                data_string += f'Content-Disposition: form-data; name="{item}"\r\n\r\n{data[item]}\r\n'
+            data_string += f"{boundary}--\r\n"
+            gen_payload = data_string
+            try:
+                response = client.post(url, data=gen_payload, headers=headers).json()
+                break
+            except BaseException:
+                data["type"] += 1
+        if "url" in response:
+            info_parsed["gdrive_link"] = response["url"]
+        elif "error" in response and response["error"]:
+            info_parsed["error"] = True
+            info_parsed["error_message"] = response["message"]
+        else:
+            info_parsed["error"] = True
+            info_parsed["error_message"] = "Something went wrong :("
+        if info_parsed["error"]:
+            return info_parsed
+        if urlparse(url).netloc == "driveapp.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        info_parsed["src_url"] = url
+        if urlparse(url).netloc == "drivehub.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        if urlparse(url).netloc == "gdflix.pro" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+
+        if urlparse(url).netloc == "drivesharer.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        if urlparse(url).netloc == "drivebit.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        if urlparse(url).netloc == "drivelinks.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        if urlparse(url).netloc == "driveace.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        if urlparse(url).netloc == "drivepro.in" and not info_parsed["error"]:
+            res = client.get(info_parsed["gdrive_link"])
+            drive_link = etree.HTML(res.content).xpath(
+                "//a[contains(@class,'btn')]/@href"
+            )[0]
+            info_parsed["gdrive_link"] = drive_link
+        if info_parsed["error"]:
+            return "Faced an Unknown Error!"
+        return info_parsed["gdrive_link"]
+    except BaseException:
+        raise DirectDownloadLinkException("ERROR: Try in your broswer, mostly file not found or user limit exceeded!")
+
+def gplinks(url: str):
     client = cloudscraper.create_scraper(allow_brotli=False)
-    
+    p = urlparse(url)
+    final_url = f'{p.scheme}://{p.netloc}/links/go'
+
+    res = client.head(url)
+    header_loc = res.headers['location']
     url = url[:-1] if url[-1] == '/' else url
-    
-    params = (('d', int(time.time()) + (60 * 4)),)
-    r = client.get(url, params=params, headers= {'Referer': 'https://newforex.online/'})
-    
-    soup = BeautifulSoup(r.text, 'html.parser')
-    inputs = soup.find(id="go-link").find_all(name="input")
+
+    param = url.split("/")[-1]
+    req_url = f'{p.scheme}://{p.netloc}/{param}'
+    p = urlparse(header_loc)
+    ref_url = f'{p.scheme}://{p.netloc}/'
+
+    h = { 'referer': ref_url }
+    res = client.get(req_url, headers=h, allow_redirects=False)
+
+    bs4 = BeautifulSoup(res.content, 'html.parser')
+    inputs = bs4.find_all('input')
     data = { input.get('name'): input.get('value') for input in inputs }
-    time.sleep(7)
-    
-    headers = {'Host': 'try2link.com', 'X-Requested-With': 'XMLHttpRequest', 'Origin': 'https://try2link.com', 'Referer': url}
-    
-    bypassed_url = client.post('https://try2link.com/links/go', headers=headers,data=data)
-    return bypassed_url.json()["url"]
 
-def htpm(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    r = client.get(url, allow_redirects=True).text
-    j = r.split('("')[-1]
-    url = j.split('")')[0]
-    return url
-    
-
+    h = {
+        'referer': ref_url,
+        'x-requested-with': 'XMLHttpRequest',
+    }
+    time.sleep(10)
+    res = client.post(final_url, headers=h, data=data)
+    try:
+        return res.json()['url'].replace('\/','/')
+    except: return 'Something went wrong :('
 
 def mdisk(url: str) -> str:
 
@@ -902,4 +738,208 @@ def rock(url: str) -> str:
     try:
         return r.json()['url']
     except: return "Something went wrong :("
+
+def hubdrive(url: str) -> str:
+    """ Hubdrive google drive link generator
+    By https://github.com/xcscxr """
+    if not EMAIL:
+        raise DirectDownloadLinkException("ERROR: EMAIL not provided")
+    temp = urlparse(url)
+    client = rsession()
+    client.post(f'{temp.scheme}://{temp.netloc}/sign', data={'email': EMAIL, 'pass': PWSSD})
+    try:
+        client.cookies.get_dict()['crypt']
+    except:
+        raise DirectDownloadLinkException("ERROR: invalid SHARER_EMAIL")
+    try:
+        res = client.get(url)
+        req_url = f"{temp.scheme}://{temp.netloc}/ajax.php?ajax=download"
+        res = client.post(req_url, headers={'x-requested-with': 'XMLHttpRequest'}, data={'id': url.split('/')[-1]}).json()['file']
+        client.get(f'{temp.scheme}://{temp.netloc}/login.php?action=logout')
+        return f'https://drive.google.com/open?id={res.split("gd=")[-1]}'
+    except:
+        return "Something went wrong :("
+
+def parse_info(res):
+    info_parsed = {}
+    title = re.findall('>(.*?)<\/h4>', res.text)[0]
+    info_chunks = re.findall('>(.*?)<\/td>', res.text)
+    info_parsed['title'] = title
+    for i in range(0, len(info_chunks), 2):
+        info_parsed[info_chunks[i]] = info_chunks[i+1]
+    return info_parsed
+
+def kolop_dl(url):
+    if not KOLOP_CRYPT:
+        raise DirectDownloadLinkException("ERROR: KOLOP_CRYPT not provided")
+    client = requests.Session()
+    client.cookies.update({'crypt': KOLOP_CRYPT})
     
+    res = client.get(url)
+    info_parsed = parse_info(res)
+    info_parsed['error'] = False
+    
+    up = urlparse(url)
+    req_url = f"{up.scheme}://{up.netloc}/ajax.php?ajax=download"
+    
+    file_id = url.split('/')[-1]
+    
+    data = { 'id': file_id }
+    
+    headers = {
+        'x-requested-with': 'XMLHttpRequest'
+    }
+    
+    try:
+        res = client.post(req_url, headers=headers, data=data).json()['file']
+    except:
+        raise DirectDownloadLinkException("ERROR: drive full ayindi personal drive lo konni delete chey ra")
+    
+    gd_id = re.findall('gd=(.*)', res, re.DOTALL)[0]
+    
+    info_parsed['gdrive_url'] = f"https://drive.google.com/open?id={gd_id}"
+    info_parsed['src_url'] = url
+
+    return info_parsed['gdrive_url']
+
+def gt(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://go.theforyou.in"
+    url = url[:-1] if url[-1] == '/' else url
+
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}?quelle="
+
+    resp = client.get(final_url)
+    
+    soup = BeautifulSoup(resp.content, "html.parser")
+    try:
+        inputs = soup.find(id="go-link").find_all(name="input")
+    except:
+        return "Incorrect Link"
+    data = { input.get('name'): input.get('value') for input in inputs }
+
+    h = { "x-requested-with": "XMLHttpRequest" }
+    
+    time.sleep(6)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return r.json()['url']
+    except: return "Something went wrong :("
+
+def psm(url):
+       client = rsession()
+       h = {
+             'upgrade-insecure-requests': '1',
+             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+       }
+       res = client.get(url, cookies={}, headers=h)
+       print(res.text) 
+       url = 'https://try2link.com/'+re.findall('try2link\.com\/(.*?) ', res.text)[0]
+
+       res = client.head(url)
+
+       id = re.findall('d=(.*?)&', res.headers['location'])[0]
+       id = base64.b64decode(id).decode('utf-8')
+
+       url += f'/?d={id}'
+       res = client.get(url)
+
+       bs4 = BeautifulSoup(res.content, 'html.parser')
+       inputs = bs4.find_all('input')
+       data = { input.get('name'): input.get('value') for input in inputs }
+    
+       time.sleep(6.5)
+       res = client.post(
+           'https://try2link.com/links/go',
+          headers={
+                 'referer': url,
+                 'x-requested-with': 'XMLHttpRequest',
+          }, data=data
+       )
+       out = res.json()
+       return out
+
+def dlbypass(url):
+    api = "https://api.emilyx.in/api"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    resp = client.get(url)
+    if resp.status_code == 404:
+        return "File not found/The link you entered is wrong!"
+    try:
+        resp = client.post(api, json={"type": "droplink", "url": url})
+        res = resp.json()
+    except BaseException:
+        return "API UnResponsive / Invalid Link !"
+    if res["success"] is True:
+        return res["url"]
+    else:
+        return res["msg"]
+def loan(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    j = url.split('?token=')[-1]
+    param = j.replace('&m=1','')
+    if "loan.kinemaster.cc" in url:
+         DOMAIN = "https://go.kinemaster.cc"
+    else:
+         DOMAIN = "https://go.theforyou.in"
+    final_url = f"{DOMAIN}/{param}"
+    resp = client.get(final_url)
+    soup = BeautifulSoup(resp.content, "html.parser")    
+    try: inputs = soup.find(id="go-link").find_all(name="input")
+    except: return "Incorrect Link"
+    data = { input.get('name'): input.get('value') for input in inputs }
+    h = { "x-requested-with": "XMLHttpRequest" }
+    time.sleep(10)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return r.json()['url']
+    except: return "Something went wrong :("
+
+def ola(url) :
+    soup = "None"
+    client = requests.Session()
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Referer': url,
+            'Alt-Used': 'olamovies.wtf',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-User': '?1',
+        }
+    while 'rocklinks.net' not in soup:
+             res = client.post(url, headers=headers, allow_redirects=True)
+             j = res.text
+             rose = j.split('url = "')[-1]
+             soup = rose.split('";')[0]       
+             if "rocklinks.net" in soup:
+                   return soup
+def try2link(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    
+    url = url[:-1] if url[-1] == '/' else url
+    
+    params = (('d', int(time.time()) + (60 * 4)),)
+    r = client.get(url, params=params, headers= {'Referer': 'https://newforex.online/'})
+    
+    soup = BeautifulSoup(r.text, 'html.parser')
+    inputs = soup.find(id="go-link").find_all(name="input")
+    data = { input.get('name'): input.get('value') for input in inputs }
+    time.sleep(7)
+    
+    headers = {'Host': 'try2link.com', 'X-Requested-With': 'XMLHttpRequest', 'Origin': 'https://try2link.com', 'Referer': url}
+    
+    bypassed_url = client.post('https://try2link.com/links/go', headers=headers,data=data)
+    return bypassed_url.json()["url"]
+
+def htpm(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    r = client.get(url, allow_redirects=True).text
+    j = r.split('("')[-1]
+    url = j.split('")')[0]
+    return url
