@@ -134,6 +134,131 @@ def _clone(message, bot):
         else:
             tag = reply_to.from_user.mention_html(reply_to.from_user.first_name)
     
+    is_psm = is_psm_link(link)
+    if is_psm:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = psm(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"PSMlink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_ola = is_ola_link(link)
+    if is_ola:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = ola(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"olalink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_htp = is_htp_link(link)
+    if is_htp:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = htp(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"htplink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_htpm = is_htpm_link(link)
+    if is_htpm:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = htpm(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"htplink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_gt = is_gt_link(link)
+    if is_gt:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = gt(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"gtlink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_rock = is_rock_link(link)
+    if is_rock:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = rock(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"rocklink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_gp = is_gp_link(link)
+    if is_gp:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = gplinks(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"gplink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_ouo = is_ouo_link(link)
+    if is_ouo:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = ouo(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"ouo_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_dl = is_dl_link(link)
+    if is_dl:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = dlbypass(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"droplink_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_mdisk = is_mdisk_link(link)
+    if is_mdisk:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = mdisk(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"mdisk_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_loan = is_loan_link(link)
+    if is_loan:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = loan(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"link_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+    is_try2link = is_try2link_link(link)
+    if is_try2link:
+        try:
+            msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
+            link = try2link(link)
+            deleteMessage(bot, msg)
+            msg = sendMessage(f"try2link_bypassed-Jack:<code>{link}</code>", bot, message) 
+        except DirectDownloadLinkException as e:
+            deleteMessage(bot, msg)
+            return sendMessage(str(e), bot, message)
+
+
+
+
+
 
     is_gdtot = is_gdtot_link(link)
     is_unified = is_unified_link(link)
